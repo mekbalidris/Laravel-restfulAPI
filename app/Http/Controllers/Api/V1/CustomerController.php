@@ -8,7 +8,7 @@ use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Http\Resources\V1\CustomerResource;
 use App\Http\Resources\V1\CustomerCollection;
-use App\Services\V1\CustomerQuery;
+use App\Filters\V1\CustomersFilter;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
@@ -17,17 +17,23 @@ class CustomerController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {
-        $filter = new CustomerQuery();
-        $queryItems = $filter->transform($request);
+{
+    $filter = new CustomersFilter();
+    $filterItems = $filter->transform($request);
 
-        if(count($queryItems) == 0){
-            return new CustomerCollection(Customer::paginate());
-        } else {
-            return new CustomerCollection(Customer::where($queryItems)->paginate());
-        }
+    $includeInvoices = $request->query('includeInvoices');
 
+    $customersQuery = Customer::where($filterItems);
+
+    if ($includeInvoices) {
+        $customersQuery = $customersQuery->with('invoices');
     }
+
+    // Paginate the query results
+    $customers = $customersQuery->paginate(10)->appends($request->query());
+
+    return new CustomerCollection($customers);
+}
 
     /**
      * Show the form for creating a new resource.
