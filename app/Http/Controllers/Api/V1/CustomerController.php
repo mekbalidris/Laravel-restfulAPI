@@ -48,7 +48,7 @@ class CustomerController extends Controller
      */
     public function store(StoreCustomerRequest $request)
     {
-        //
+        return new CustomerResource(Customer::create($request->all()));
     }
 
     /**
@@ -56,6 +56,12 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
+        $includeInvoices = request()->query('includeInvoices');
+
+        if($includeInvoices){
+            return new CustomerResource($customer->LoadMissing('invoices'));
+        }
+
         return new CustomerResource($customer);
     }
 
@@ -72,7 +78,9 @@ class CustomerController extends Controller
      */
     public function update(UpdateCustomerRequest $request, Customer $customer)
     {
-        //
+        $data = $request->validated();
+        $customer->update($data);
+        return response()->json(['message' => 'Customer updated successfully', 'customer' => $customer]);
     }
 
     /**
