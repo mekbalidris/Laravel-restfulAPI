@@ -23,20 +23,26 @@ class StoreCustomerRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required'],
-            'type' => ['required', Rule::in(['I', 'B', 'i', 'b'])],
-            'email' => ['required', 'email'],
-            'address' => ['required'],
-            'city' => ['required'],
-            'state' => ['required'],
-            'postalCode' => ['required'],
+            '*.customerId' => ['required', 'integer'],
+            '*.amount' => ['required', 'numeric'],
+            '*.status' => ['required', Rule::in(['b', 'p', 'B', 'P'])],
+            '*.billedDate' => ['required', 'date_format:Y-m-d H:i:s'],
+            '*.paidDate' => ['date_format:Y-m-d H:i:s', 'nullable'],
         ];
     }
 
     protected function prepareForValidation()
     {
-        $this->merge([
-            'postal_code' => $this->postalCode,
-        ]);
+        $data = [];
+
+        foreach($this->toArray() as $obj){
+            $obj['customer_id'] = $obj['customerId'] ?? null;
+            $obj['billed_date'] = $obj['billedDate'] ?? null;
+            $obj['paid_date'] = $obj['paidDate'] ?? null;
+
+            $data[] = $obj;
+        }
+
+        $this->merge($data);
     }
 }

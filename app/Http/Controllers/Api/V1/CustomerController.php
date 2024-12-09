@@ -78,8 +78,8 @@ class CustomerController extends Controller
      */
     public function update(UpdateCustomerRequest $request, Customer $customer)
     {
-        $data = $request->validated();
-        $customer->update($data);
+        $validated = $request->validated();
+        $customer->update($validated);
         return response()->json(['message' => 'Customer updated successfully', 'customer' => $customer]);
     }
 

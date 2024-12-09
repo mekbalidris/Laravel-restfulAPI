@@ -31,17 +31,17 @@ class UpdateCustomerRequest extends FormRequest
                 'address' => ['required'],
                 'city' => ['required'],
                 'state' => ['required'],
-                'postalCode' => ['required'],
+                'postalCode' => ['required'], // Match this key
             ];
         } else{
             return [
-                'name' => ['sometimes', 'required'],
-                'type' => ['sometimes', 'required', Rule::in(['I', 'B', 'i', 'b'])],
-                'email' => ['sometimes', 'required', 'email'],
-                'address' => ['sometimes', 'required'],
-                'city' => ['sometimes', 'required'],
-                'state' => ['sometimes', 'required'],
-                'postalCode' => ['sometimes', 'required'],
+                'name' => ['sometimes'],
+                'type' => ['sometimes', Rule::in(['I', 'B', 'i', 'b'])],
+                'email' => ['sometimes', 'email'],
+                'address' => ['sometimes'],
+                'city' => ['sometimes'],
+                'state' => ['sometimes'],
+                'postalCode' => ['sometimes'],
             ];
         }
     }
@@ -50,11 +50,11 @@ class UpdateCustomerRequest extends FormRequest
      * Prepare data for validation.
      */
     protected function prepareForValidation()
-    {
-        if ($this->postalCode) {
-            $this->merge([
-                'postal_code' => $this->postalCode,
-            ]);
+        {
+            if ($this->postalCode) {
+                $this->merge([
+                    'postal_code' => $this->postalCode, // Ensure this matches validation rules
+                ]);
+            }
         }
-    }
 }
